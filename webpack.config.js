@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   entry: './react-csr.tsx',
-  mode: "production",
+  mode: "development",
   output: {
     path: path.resolve(__dirname, 'assets'),
     filename: 'main.js',
