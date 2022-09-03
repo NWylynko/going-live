@@ -1,3 +1,6 @@
+// this gets imported by both react ssr and csr, it both gets server side rendered and then client rendered a second later
+// so this code needs to work both in node and the browser :)
+
 import React, { useState } from "react";
 import type { PropsWithChildren } from "react";
 

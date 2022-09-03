@@ -16,10 +16,12 @@ export const handler: RouteHandlerMethod = (req, res) => {
       res.header("Content-type", "text/html");
       stream.pipe(res.raw);
     },
-    onShellError(error) {
+    onShellError(err) {
       // Something errored before we could complete the shell so we emit an alternative shell.
+      didError = true;
+      console.error(err);
       res.statusCode = 500;
-      res.send('<!doctype html><p>Loading...</p><script src="clientrender.js"></script>');
+      res.send("<!doctype html><span>An Error occurring while rendering :(</span>");
     },
     onError(err) {
       didError = true;
@@ -27,5 +29,9 @@ export const handler: RouteHandlerMethod = (req, res) => {
     },
   };
 
+  // where is where we kick off the render from the top component app
+  // for a more complete solution we would want to pass props along like url and cookies
+  // we could have a context that would hold that stuff
+  // then the dev can use some custom hooks to obtain that data to conditionally render stuff
   const stream = renderToPipeableStream(<App />, options);
 };
