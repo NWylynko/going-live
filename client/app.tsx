@@ -4,19 +4,29 @@
 import React, { useState } from "react";
 import type { PropsWithChildren } from "react";
 
-export const App = () => {
+interface AppProps {
+  files: string[];
+}
+
+export const App = ({ files }: AppProps) => {
   return (
-    <Document>
+    <Document files={files}>
       <Counter />
     </Document>
   );
 };
 
-const Document = ({ children }: PropsWithChildren) => {
+interface DocumentProps {
+  files: string[];
+}
+
+const Document = ({ children, files }: PropsWithChildren<DocumentProps>) => {
   return (
     <>
       <head>
-        <script src="./assets/main.js" type="module" />
+        {files.map((file) => (
+          <script key={file} src={`./assets/${file}`} type="module" />
+        ))}
       </head>
       <body>{children}</body>
     </>
@@ -26,7 +36,7 @@ const Document = ({ children }: PropsWithChildren) => {
 const useCount = (initialCount: number) => {
   const [count, setCount] = useState<number>(initialCount);
 
-  const increment = () => setCount((n) => n + 1);
+  const increment = () => setCount((n) => n + 5);
   const decrement = () => setCount((n) => n - 1);
 
   return { count, increment, decrement };
@@ -37,9 +47,13 @@ const Counter = () => {
 
   return (
     <>
-      <span>this is the count: {count}</span>
-      <button onClick={increment}>Add</button>
-      <button onClick={decrement}>Sub</button>
+      <div>
+        <span>this is the count: {count}</span>
+      </div>
+      <div>
+        <button onClick={increment}>Add</button>
+        <button onClick={decrement}>Sub</button>
+      </div>
     </>
   );
 };

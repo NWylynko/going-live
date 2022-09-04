@@ -4,8 +4,11 @@ import { App } from "../client/app";
 import { renderToPipeableStream } from "react-dom/server";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import type { RouteHandlerMethod } from "fastify/types/route";
+import { getAssets } from "./getMain";
 
 export const handler: RouteHandlerMethod = (req, res) => {
+  const files = getAssets();
+
   let didError = false;
 
   const options: RenderToPipeableStreamOptions = {
@@ -33,5 +36,5 @@ export const handler: RouteHandlerMethod = (req, res) => {
   // for a more complete solution we would want to pass props along like url and cookies
   // we could have a context that would hold that stuff
   // then the dev can use some custom hooks to obtain that data to conditionally render stuff
-  const stream = renderToPipeableStream(<App />, options);
+  const stream = renderToPipeableStream(<App files={files} />, options);
 };

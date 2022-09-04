@@ -1,34 +1,29 @@
 import { FastifyInstance } from "fastify/types/instance";
+import fs from "node:fs/promises"
+import path from "node:path"
+import * as WebSocket from 'ws';
 
-// export const WebsocketServer = async function (fastify: FastifyInstance) {
+const sockets: WebSocket[] = []
 
-//   fastify.get('/__live/ws', { websocket: true }, (connection, req) => {
+export const WebsocketServer = async function (fastify: FastifyInstance) {
 
-//     console.log("ws request")
+  fastify.get('/__live/ws', { websocket: true }, (connection, req) => {
 
-//     connection.socket.on("close", () => console.log("close"))
-//     connection.socket.on("error", () => console.log("error"))
-//     connection.socket.on("open", () => console.log("open"))
-//     connection.socket.on("ping", () => console.log("ping"))
-//     connection.socket.on("pong", () => console.log("pong"))
-//     connection.socket.on("unexpected-response", () => console.log("unexpected-response"))
-//     connection.socket.on("upgrade", () => console.log("upgrade"))
+    sockets.push(connection.socket);
 
-//     connection.socket.on('message', message => {
-//       // message.toString() === 'hi from client'
+  })
+};
 
-//       console.log("message, from 'on'")
+(async () => {
+  
+  const assetPath = path.join(__dirname, '../../assets');
 
-//       connection.socket.send('hi from server, from "on"')
-//     })
+  const watcher = fs.watch(assetPath);
 
-//     connection.socket.send('hi new connection')
+  for await (const event of watcher) {
+    if (event.eventType === "change") {
+      sockets.map(socket => socket.send(event.filename))
+    }    
+  }
 
-//     connection.socket.onmessage = () => {
-//       console.log("message, from 'onmessage'")
-
-//       connection.socket.send('hi from server, from "onmessage"')
-//     }
-
-//   })
-// }
+})();
